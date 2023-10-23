@@ -38,12 +38,55 @@
 ; Save any modified registers
 ;---------------------------------------
 nextval:                               ;
-                                       ;
+    push    bp                         ;
+    push    ax                         ;
                                        ;
 ;---------------------------------------
 ; Code to make 1 move in the maze
 ;---------------------------------------
+    mov al, si                         ;
+    sub al, 1                          ;
+    mul 30                             ;
+    add al, di                         ;
+    sub al, 1                          ;
+    add bp, al                         ;
                                        ;
+    cmp byte ptr [bx], 1               ;
+    je  test_n                         ;
+                                       ;
+    cmp byte ptr [bx], 2               ;
+    je  test_e                         ;
+                                       ;
+    cmp byte ptr [bx], 3               ;
+    je test_s                          ;
+                                       ;
+                                       ;
+test_w:                                ;
+    cmp byte ptr ds:[bp - 1], ' '      ;
+    jne test_n                         ;
+    add [si], -1                       ;   
+    mov bx, 3                          ;
+    jmp exit                           ;
+                                       ;
+test_n:                                ;
+    cmp byte ptr ds:[bp - 30], ' '     ;
+    jne test_e                         ;
+    add [di], -1                       ;
+    mov bx, 4                          ;
+    jmp exit                           ;
+                                       ;    
+test_e:                                ;
+    cmp byte ptr ds:[bp + 1], ' '      ;
+    jne test_s                         ;
+    add [si], 1                        ;
+    mov bx, 1                          ;
+    jmp exit                           ;
+                                       ;
+test_s:                                ;
+    cmp byte ptr ds:[bp + 30], ' '     ;
+    jne test_w                         ;
+    add [di], 1                        ;
+    mov bx, 2                          ;
                                        ;
                                        ;
 ;---------------------------------------
@@ -51,6 +94,8 @@ nextval:                               ;
 ;---------------------------------------
 exit:                                  ;
                                        ;
+         pop    ax                     ;
+         pop    bp                     ;
          ret                           ;return
 ;---------------------------------------
          end
