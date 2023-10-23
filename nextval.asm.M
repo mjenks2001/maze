@@ -12,9 +12,10 @@
 ;
 ; Output:    x,y,dir modified in caller's data segment
 ;
-; Owner:     Dana A. Lasher
+; Owner:     Spencer Grattan & 
 ;
 ; Date:      Update Reason
+; 10/23/23
 ; --------------------------
 ; 11/06/2016 Original version
 ;
