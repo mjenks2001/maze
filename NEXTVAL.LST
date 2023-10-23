@@ -1,0 +1,151 @@
+Microsoft (R) Macro Assembler Version 6.11		    10/23/23 14:30:41
+nextval.asm						     Page 1 - 1
+
+
+				;---------------------------------------------------------------------
+				; Program:   nextval subroutine
+				;
+				; Function:  Find next mouse move in an array 15 by 30.
+				;            We can move into a position if its contents is blank ( 20h ).
+				;
+				; Input:     Calling sequence is:
+				;            x    pointer   si
+				;            y    pointer   di
+				;            dir  pointer   bx
+				;            maze pointer   bp
+				;
+				; Output:    x,y,dir modified in caller's data segment
+				;
+				; Owner:     Spencer Grattan & 
+				;            Madeleine Jenks
+				; Date:      Update Reason
+				; 10/23/23
+				; --------------------------
+				; 11/06/2016 Original version
+				;
+				;
+				;---------------------------------------
+				         .model    small               ;64k code and 64k data
+				         .8086                         ;only allow 8086 instructions
+				         public    nextval             ;allow extrnal programs to call
+				;---------------------------------------
+
+
+				;---------------------------------------
+ 0000				         .data                         ;start the data segment
+				;---------------------------------------
+
+
+				;---------------------------------------
+ 0000				         .code                         ;start the code segment
+				;---------------------------------------
+				; Save any modified registers
+				;---------------------------------------
+ 0000				nextval:                               ;
+ 0000  55			    push    bp                         ;
+ 0001  50			    push    ax                         ;
+				                                       ;
+				;---------------------------------------
+				; Code to make 1 move in the maze
+				;---------------------------------------
+				    mov al, si                         ;
+nextval.asm(47): error A2070: invalid instruction operands
+ 0002  2C 01			    sub al, 1                          ;
+				    mul 30                             ;
+nextval.asm(49): error A2001: immediate operand not allowed
+				    add al, di                         ;
+nextval.asm(50): error A2070: invalid instruction operands
+ 0004  2C 01			    sub al, 1                          ;
+				    add bp, al                         ;
+nextval.asm(52): error A2070: invalid instruction operands
+				                                       ;
+ 0006  80 3F 01			    cmp byte ptr [bx], 1               ;
+ 0009  74 16			    je  test_n                         ;
+				                                       ;
+ 000B  80 3F 02			    cmp byte ptr [bx], 2               ;
+ 000E  74 1D			    je  test_e                         ;
+				                                       ;
+ 0010  80 3F 03			    cmp byte ptr [bx], 3               ;
+ 0013  74 24			    je test_s                          ;
+				                                       ;
+				                                       ;
+ 0015				test_w:                                ;
+ 0015  3E: 80 7E FF 20		    cmp byte ptr ds:[bp - 1], ' '      ;
+ 001A  75 05			    jne test_n                         ;
+				    add [si], -1                       ;   
+nextval.asm(67): error A2070: invalid instruction operands
+ 001C  BB 0003			    mov bx, 3                          ;
+ 001F  EB 22			    jmp exit                           ;
+				                                       ;
+ 0021				test_n:                                ;
+ 0021  3E: 80 7E E2 20		    cmp byte ptr ds:[bp - 30], ' '     ;
+ 0026  75 05			    jne test_e                         ;
+				    add [di], -1                       ;
+nextval.asm(74): error A2070: invalid instruction operands
+ 0028  BB 0004			    mov bx, 4                          ;
+ 002B  EB 16			    jmp exit                           ;
+				                                       ;    
+ 002D				test_e:                                ;
+ 002D  3E: 80 7E 01 20		    cmp byte ptr ds:[bp + 1], ' '      ;
+ 0032  75 05			    jne test_s                         ;
+				    add [si], 1                        ;
+nextval.asm(81): error A2070: invalid instruction operands
+ 0034  BB 0001			    mov bx, 1                          ;
+ 0037  EB 0A			    jmp exit                           ;
+				                                       ;
+ 0039				test_s:                                ;
+ 0039  3E: 80 7E 1E 20		    cmp byte ptr ds:[bp + 30], ' '     ;
+ 003E  75 D5			    jne test_w                         ;
+				    add [di], 1                        ;
+nextval.asm(88): error A2070: invalid instruction operands
+ 0040  BB 0002			    mov bx, 2                          ;
+				                                       ;
+				                                       ;
+				;---------------------------------------
+				; Restore registers and return
+				;---------------------------------------
+ 0043				exit:                                  ;
+				                                       ;
+ 0043  58			         pop    ax                     ;
+ 0044  5D			         pop    bp                     ;
+ 0045  C3			         ret                           ;return
+				;---------------------------------------
+				         end
+ 
+Microsoft (R) Macro Assembler Version 6.11		    10/23/23 14:30:41
+nextval.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+DGROUP . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	16 Bit	 0000	  Word	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	16 Bit	 0046	  Word	  Public  'CODE'	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 0000h	 
+@DataSize  . . . . . . . . . . .	Number	 0000h	 
+@Interface . . . . . . . . . . .	Number	 0000h	 
+@Model . . . . . . . . . . . . .	Number	 0002h	 
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 DGROUP
+@fardata?  . . . . . . . . . . .	Text   	 FAR_BSS
+@fardata . . . . . . . . . . . .	Text   	 FAR_DATA
+@stack . . . . . . . . . . . . .	Text   	 DGROUP
+exit . . . . . . . . . . . . . .	L Near	 0043	  _TEXT	
+nextval  . . . . . . . . . . . .	L Near	 0000	  _TEXT	Public
+test_e . . . . . . . . . . . . .	L Near	 002D	  _TEXT	
+test_n . . . . . . . . . . . . .	L Near	 0021	  _TEXT	
+test_s . . . . . . . . . . . . .	L Near	 0039	  _TEXT	
+test_w . . . . . . . . . . . . .	L Near	 0015	  _TEXT	
+
+	   0 Warnings
+	   8 Errors
