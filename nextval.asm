@@ -30,7 +30,8 @@
 ;---------------------------------------
          .data                         ;start the data segment
                                        ;
-    offset      db      0              ;
+    oset        db      0                ;
+    rowLen      db      30               ;
 ;---------------------------------------
 
 
@@ -42,16 +43,25 @@
 nextval:                               ;
     push    bp                         ;
     push    ax                         ;
+    push    cx
+    push    dx
+
                                        ;
 ;---------------------------------------
 ; Code to make 1 move in the maze
 ;---------------------------------------
-    mov al, si                         ;
+    mov ch, byte ptr ds:[di]           ; [TEST CODE] 
+    mov cl, byte ptr ds:[si]           ; Updates the cx and dx registers to show what 
+    mov dh, byte ptr ds:[bp]           ; the input pointers are pointing to
+    mov dl, byte ptr ds:[bx]           ;
+                                       ;
+    mov al, byte ptr ds:[di]           ;
     sub al, 1                          ;
-    mul 30                             ;
-    add al, di                         ;
+    mul rowLen                         ;
+    add al, byte ptr ds:[si]           ;
     sub al, 1                          ;
-    add bp, al                         ;
+    add [bp], al                       ; Advance the maze pointer 
+    mov dh, byte ptr ds:[bp]           ; [TEST CODE] update dh to show what the maze pointer is pointing to
                                        ;
     cmp byte ptr [bx], 1               ;
     je  test_n                         ;
@@ -66,28 +76,28 @@ nextval:                               ;
 test_w:                                ;
     cmp byte ptr ds:[bp - 1], ' '      ;
     jne test_n                         ;
-    add [si], -1                       ;   
+    dec byte ptr [si]                  ;   
     mov bx, 3                          ;
     jmp exit                           ;
                                        ;
 test_n:                                ;
     cmp byte ptr ds:[bp - 30], ' '     ;
     jne test_e                         ;
-    add [di], -1                       ;
+    dec byte ptr [di]
     mov bx, 4                          ;
     jmp exit                           ;
                                        ;    
 test_e:                                ;
     cmp byte ptr ds:[bp + 1], ' '      ;
     jne test_s                         ;
-    add [si], 1                        ;
+    inc byte ptr [si]                     ;
     mov bx, 1                          ;
     jmp exit                           ;
                                        ;
 test_s:                                ;
     cmp byte ptr ds:[bp + 30], ' '     ;
     jne test_w                         ;
-    add [di], 1                        ;
+    dec byte ptr [di]                       ;
     mov bx, 2                          ;
                                        ;
                                        ;
@@ -96,6 +106,8 @@ test_s:                                ;
 ;---------------------------------------
 exit:                                  ;
                                        ;
+         pop    dx
+         pop    cx
          pop    ax                     ;
          pop    bp                     ;
          ret                           ;return
