@@ -13,7 +13,7 @@
 ; Output:    x,y,dir modified in caller's data segment
 ;
 ; Owner:     Spencer Grattan & 
-;            Madeleine Jenks
+;
 ; Date:      Update Reason
 ; 10/23/23
 ; --------------------------
